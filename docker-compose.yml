@@ -1,0 +1,11 @@
+version: '3.7'
+
+services:
+  php_apache:
+    image: scto-php:8.2
+    container_name: transcribathon_helth
+    volumes:
+      - ./public_html/:/var/www/html/
+    ports:
+      - 443:443
+      - 80:80
