@@ -21,7 +21,7 @@ docker_stop:
 	@echo "...mischief managed."
 	@echo
 
-compile_0css:
+compile_css:
 	@echo
 	@echo "----"
 	@echo "Creating CSS"
