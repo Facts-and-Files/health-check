@@ -1,7 +1,7 @@
 module.exports = {
   important: true,
   content: [
-		'./public_html/index.php'
+		'./public_html/index.html'
   ],
   theme: {
     extend: {},

@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="de">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Transcribathon Health Status</title>
+	<link rel="shortcut icon" href="/favicon.png" />
+	<link rel="stylesheet" href="/assets/css/style.min.css?v=20231102" />
+	<script src="/assets/js/alpinejs.3.13.2.min.js" defer></script>
+</head>
+<body
+	class="
+		text-sm
+		font-sans
+		subpixel-antialiased
+		leading-normal
+		overflow-y-scroll
+		p-8
+	"
+	x-data="{
+		data: {
+			website:
+			{
+				title: 'Website',
+				description: '',
+				status: '&hellip;waiting'
+			},
+//			apiv1:
+//			{
+//				title: 'API v1',
+//				description: '',
+//				status: '&hellip;waiting'
+//			},
+			apiv2:
+			{
+				title: 'API v2',
+				description: '',
+				status: '&hellip;waiting'
+			},
+			database:
+			{
+				title: 'Database',
+				description: '',
+				status: '&hellip;waiting'
+			},
+			connectivity:
+			{
+				title: 'Connectivity',
+				description: '',
+				status: '&hellip;waiting'
+			}
+		}
+	}"
+	x-init="
+		const apiV2Response = await (await fetch('https://api.transcribathon.eu/v2/health')).json();
+		const apiV2Data = apiV2Response.data;
+
+		const websiteResponse = await (await fetch('https://transcribathon.eu/wp-content/themes/transcribathon/health.php')).json();
+		const websiteData = websiteResponse.data;
+
+		// website
+		data.website.status = websiteResponse.success !== true ? 'Failed' : websiteData.ScriptExecutionTimeStatus;
+		data.website.description = websiteResponse.success !== true ? 'no connectivity' : 'script execution time: ' + websiteData.ScriptExecutionTimeMS + ' ms'
+
+		// API V2
+		data.apiv2.status = apiV2Response.success !== true ? 'Failed' : apiV2Data.ScriptExecutionTimeStatus;
+		data.apiv2.description = apiV2Response.success !== true ? 'no connectivity' : 'script execution time: ' + apiV2Data.ScriptExecutionTimeMS + ' ms';
+
+		// network
+		data.connectivity.status = apiV2Data.NetworkConnectionStatus !== 'Ok' ? 'Failed' : apiV2Data.NetworkConnectionTimeStatus;
+		data.connectivity.description = apiV2Data.NetworkConnectionStatus !== 'Ok' ? 'no connectivity' : 'connection time: ' + apiV2Data.NetworkConnectionTimeMS + ' ms';
+
+		// database
+		data.database.status = apiV2Data.DatabaseConnectionStatus !== 'Ok' ? 'Failed' : apiV2Data.DatabaseExecutionTimeStatus;
+		data.database.description = apiV2Data.DatabaseConnectionStatus !== 'Ok' ? 'no connectivity' : 'connection time: ' + apiV2Data.DatabaseConnectionTimeMS + ' ms<br />execution time: ' + apiV2Data.DatabaseExecutionTimeMS + ' ms';
+
+		// API V1
+//		data.apiv1.status = apiV1Response?.UserId ? 'Ok' : 'Failed';
+//		data.apiv1.description = apiV1Response?.UserId ? 'resonse returned' : 'no response';
+	"
+>
+	<div class="
+		w-full
+		mx-auto
+		max-w-md
+		p-4
+		bg-white
+		border
+		border-gray-200
+		rounded-lg
+		shadow
+		sm:p-8
+	">
+		<h1 class="
+			mb-8
+			text-center
+			text-xl
+			font-bold
+			leading-none
+			text-gray-900
+		">Transcribathon Health Checks</h1>
+		<div class="flow-root">
+			<ul class="divide-y divide-gray-200">
+				<template x-for="[key, service] in Object.entries(data)" :key="key">
+					<li class="py-3 sm:py-4">
+						<div class="flex items-center space-x-4">
+							<div class="flex-1 min-w-0">
+								<p
+									class="text-sm font-medium text-gray-900"
+									x-text="service.title"
+								></p>
+								<p
+									class="text-sm text-gray-500 truncate"
+									x-html="service.description"
+								>
+								</p>
+							</div>
+            	<div
+								class="
+									inline-flex
+									items-center
+									text-xs
+									font-medium
+									mr-2
+									px-2.5
+									py-0.5
+									rounded-full
+								"
+								:class="
+									service.status === 'Ok'
+										? 'bg-green-100 text-green-800'
+										: (service.status === 'Slow'
+											? 'bg-orange-100 text-orange-800'
+											: 'bg-red-100 text-red-800')
+									"
+							>
+                <span class="
+										w-2
+										h-2
+										mr-1
+										rounded-full
+									"
+								:class="
+									service.status === 'Ok'
+										? 'bg-green-500'
+										: (service.status === 'Slow'
+											? 'bg-orange-500'
+											: 'bg-red-500')
+									"
+								></span>
+								<span x-text="service.status"></span>
+            	</div>
+						</div>
+					</li>
+				</template>
+			</ul>
+		</div>
+	</div>
+</body>
+</html>
