@@ -25,12 +25,12 @@
 				description: '',
 				status: '&hellip;waiting'
 			},
-//			apiv1:
-//			{
-//				title: 'API v1',
-//				description: '',
-//				status: '&hellip;waiting'
-//			},
+			apiv1:
+			{
+				title: 'API v1',
+				description: '',
+				status: '&hellip;waiting'
+			},
 			apiv2:
 			{
 				title: 'API v2',
@@ -60,7 +60,7 @@
 
 		// website
 		data.website.status = websiteResponse.success !== true ? 'Failed' : websiteData.ScriptExecutionTimeStatus;
-		data.website.description = websiteResponse.success !== true ? 'no connectivity' : 'script execution time: ' + websiteData.ScriptExecutionTimeMS + ' ms'
+		data.website.description = websiteResponse.success !== true ? 'no response' : 'script execution time: ' + websiteData.ScriptExecutionTimeMS + ' ms'
 
 		// API V2
 		data.apiv2.status = apiV2Response.success !== true ? 'Failed' : apiV2Data.ScriptExecutionTimeStatus;
@@ -75,8 +75,8 @@
 		data.database.description = apiV2Data.DatabaseConnectionStatus !== 'Ok' ? 'no connectivity' : 'connection time: ' + apiV2Data.DatabaseConnectionTimeMS + ' ms<br />execution time: ' + apiV2Data.DatabaseExecutionTimeMS + ' ms';
 
 		// API V1
-//		data.apiv1.status = apiV1Response?.UserId ? 'Ok' : 'Failed';
-//		data.apiv1.description = apiV1Response?.UserId ? 'resonse returned' : 'no response';
+		data.apiv1.status = apiV2Data.APIv1ConnectionStatus !== 'Ok' ? 'Failed' : apiV2Data.APIv1ConnectionTimeStatus;
+		data.apiv1.description = apiV2Data.APIv1ConnectionStatus !== 'Ok' ? 'no response' : 'response time: ' + apiV2Data.APIv1ConnectionTimeMS + ' ms';
 	"
 >
 	<div class="
@@ -129,7 +129,7 @@
 								:class="
 									service.status === 'Ok'
 										? 'bg-green-100 text-green-800'
-										: (service.status === 'Slow'
+										: (service.status === 'Moderate'
 											? 'bg-orange-100 text-orange-800'
 											: 'bg-red-100 text-red-800')
 									"
@@ -143,7 +143,7 @@
 								:class="
 									service.status === 'Ok'
 										? 'bg-green-500'
-										: (service.status === 'Slow'
+										: (service.status === 'Moderate'
 											? 'bg-orange-500'
 											: 'bg-red-500')
 									"
